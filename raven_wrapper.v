@@ -6,8 +6,6 @@ module raven_wrapper (
 	input ext_reset,
 	input reset,
 
-
-
 	output [15:0] gpio,
 	output 	      adc0_ena,
 	output 	      adc0_convert,
@@ -40,26 +38,12 @@ module raven_wrapper (
 	input	      rcosc_in,		// RC oscillator output
 	input	      xtal_in,		// crystal oscillator output
 	input	      comp_in,		// comparator output
-//	input	      spi_sck,
-
-//	input [7:0]   spi_ro_config,
-//	input 	      spi_ro_xtal_ena,
-//	input 	      spi_ro_reg_ena,
-//	input 	      spi_ro_pll_cp_ena,
-//	input 	      spi_ro_pll_vco_ena,
-//	input 	      spi_ro_pll_bias_ena,
-//	input [3:0]   spi_ro_pll_trim,
-
-//	input [11:0]  spi_ro_mfgr_id,
-//	input [7:0]   spi_ro_prod_id,
-//	input [3:0]   spi_ro_mask_rev,
 
 	output ser_tx,
 	input  ser_rx,
 
 	// IRQ
 	input  irq_pin,		// dedicated IRQ pin
-//	input  irq_spi,		// IRQ from standalone SPI
 
 	// trap
 	output trap,
@@ -68,7 +52,12 @@ module raven_wrapper (
 	output flash_csb,
 	output flash_clk,
 
-	output flash_io0_oeb,
+	inout flash_io0,
+	inout flash_io1,
+	inout flash_io2,
+	inout flash_io3
+
+/*	output flash_io0_oeb,
 	output flash_io1_oeb,
 	output flash_io2_oeb,
 	output flash_io3_oeb,
@@ -81,7 +70,7 @@ module raven_wrapper (
 	input  flash_io0_di,
 	input  flash_io1_di,
 	input  flash_io2_di,
-	input  flash_io3_di
+	input  flash_io3_di */
 );
 
   wire inter_ram_wenb;
@@ -100,6 +89,37 @@ module raven_wrapper (
   wire [7:0] inter_spi_ro_prod_id ;
   wire [3:0] inter_spi_ro_mask_rev ;
   wire inter_irq_spi ;
+  wire inter_flash_io0_di, inter_flash_io1_di, inter_flash_io2_di, inter_flash_io3_di;
+  wire inter_flash_io0_do, inter_flash_io1_do, inter_flash_io2_do, inter_flash_io3_do;
+  wire inter_flash_io0_oeb, inter_flash_io1_oeb, inter_flash_io2_oeb, inter_flash_io3_oeb;
+
+PADINOUT flash_io_buf_0 (
+        .DI(inter_flash_io0_di),
+        .DO(inter_flash_io0_do),
+        .OEN(inter_flash_io0_oeb),
+        .YPAD(flash_io0)
+);
+
+PADINOUT flash_io_buf_1 (
+        .DI(inter_flash_io1_di),
+        .DO(inter_flash_io1_do),
+        .OEN(inter_flash_io1_oeb),
+        .YPAD(flash_io1)
+);
+
+PADINOUT flash_io_buf_2 (
+        .DI(inter_flash_io2_di),
+        .DO(inter_flash_io2_do),
+        .OEN(inter_flash_io2_oeb),
+        .YPAD(flash_io2)
+);
+
+PADINOUT flash_io_buf_3 (
+        .DI(inter_flash_io3_di),
+        .DO(inter_flash_io3_do),
+        .OEN(inter_flash_io3_oeb),
+        .YPAD(flash_io3)
+);
 
 PADINOUT gpio0 (
 	.DI(inter_gpio_in[0]),
@@ -273,18 +293,18 @@ raven_soc core1 (
 	.trap	(trap),
 	.flash_csb	(flash_csb),
 	.flash_clk	(flash_clk),
-	.flash_io0_oeb	(flash_io0_oeb),
-	.flash_io1_oeb	(flash_io1_oeb),
-	.flash_io2_oeb	(flash_io2_oeb),
-	.flash_io3_oeb	(flash_io3_oeb),
-	.flash_io0_do	(flash_io0_do),
-	.flash_io1_do	(flash_io1_do),
-	.flash_io2_do	(flash_io2_do),
-	.flash_io3_do	(flash_io3_do),
-	.flash_io0_di	(flash_io0_di),
-	.flash_io1_di	(flash_io1_di),
-	.flash_io2_di	(flash_io2_di),
-	.flash_io3_di	(flash_io3_di)
+	.flash_io0_oeb	(inter_flash_io0_oeb),
+	.flash_io1_oeb	(inter_flash_io1_oeb),
+	.flash_io2_oeb	(inter_flash_io2_oeb),
+	.flash_io3_oeb	(inter_flash_io3_oeb),
+	.flash_io0_do	(inter_flash_io0_do),
+	.flash_io1_do	(inter_flash_io1_do),
+	.flash_io2_do	(inter_flash_io2_do),
+	.flash_io3_do	(inter_flash_io3_do),
+	.flash_io0_di	(inter_flash_io0_di),
+	.flash_io1_di	(inter_flash_io1_di),
+	.flash_io2_di	(inter_flash_io2_di),
+	.flash_io3_di	(inter_flash_io3_di)
 
 );
 

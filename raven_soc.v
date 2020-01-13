@@ -20,6 +20,7 @@
 `ifdef PICORV32_V
 `error "raven_soc.v must be read before picorv32.v!"
 `endif
+`include "picorv32.v"
 
 /* Note:  Synthesize register memory from flops */
 /* Inefficient, but not terribly so */
@@ -352,7 +353,7 @@ module raven_soc (
 		.ENABLE_DIV(1),
 		.ENABLE_IRQ(1),
 		.ENABLE_IRQ_QREGS(0)
-	) cpu (
+	) rv_cpu (
 		.clk         (clk        ),
 		.resetn      (resetn     ),
 		.mem_valid   (mem_valid  ),
@@ -689,7 +690,7 @@ module raven_soc (
 	*/
 endmodule
 
-`include "picorv32.v"
+//`include "picorv32.v"
 `include "spimemio.v"
 `include "simpleuart.v"
 

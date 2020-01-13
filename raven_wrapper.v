@@ -7,9 +7,6 @@ module raven_wrapper (
 	input reset,
 
 
-/*	output [15:0] gpio_out,
-	input  [15:0] gpio_in,
-	output [15:0] gpio_outenb, */
 
 	output [15:0] gpio,
 	output 	      adc0_ena,
@@ -43,26 +40,26 @@ module raven_wrapper (
 	input	      rcosc_in,		// RC oscillator output
 	input	      xtal_in,		// crystal oscillator output
 	input	      comp_in,		// comparator output
-	input	      spi_sck,
+//	input	      spi_sck,
 
-	input [7:0]   spi_ro_config,
-	input 	      spi_ro_xtal_ena,
-	input 	      spi_ro_reg_ena,
-	input 	      spi_ro_pll_cp_ena,
-	input 	      spi_ro_pll_vco_ena,
-	input 	      spi_ro_pll_bias_ena,
-	input [3:0]   spi_ro_pll_trim,
+//	input [7:0]   spi_ro_config,
+//	input 	      spi_ro_xtal_ena,
+//	input 	      spi_ro_reg_ena,
+//	input 	      spi_ro_pll_cp_ena,
+//	input 	      spi_ro_pll_vco_ena,
+//	input 	      spi_ro_pll_bias_ena,
+//	input [3:0]   spi_ro_pll_trim,
 
-	input [11:0]  spi_ro_mfgr_id,
-	input [7:0]   spi_ro_prod_id,
-	input [3:0]   spi_ro_mask_rev,
+//	input [11:0]  spi_ro_mfgr_id,
+//	input [7:0]   spi_ro_prod_id,
+//	input [3:0]   spi_ro_mask_rev,
 
 	output ser_tx,
 	input  ser_rx,
 
 	// IRQ
 	input  irq_pin,		// dedicated IRQ pin
-	input  irq_spi,		// IRQ from standalone SPI
+//	input  irq_spi,		// IRQ from standalone SPI
 
 	// trap
 	output trap,
@@ -92,6 +89,17 @@ module raven_wrapper (
   wire [31:0] inter_ram_wdata;
   wire [31:0] inter_ram_rdata;
   wire [15:0] inter_gpio_outenb, inter_gpio_out, inter_gpio_in;
+  wire inter_spi_sck ;
+  wire inter_spi_ro_xtal_ena ;
+  wire inter_spi_ro_reg_ena ;
+  wire inter_spi_ro_pll_cp_ena ;
+  wire inter_spi_ro_pll_vco_ena ;
+  wire inter_spi_ro_pll_bias_ena ;
+  wire [3:0] inter_spi_ro_pll_trim ;
+  wire [11:0] inter_spi_ro_mfgr_id ;
+  wire [7:0] inter_spi_ro_prod_id ;
+  wire [3:0] inter_spi_ro_mask_rev ;
+  wire inter_irq_spi ;
 
 PADINOUT gpio0 (
 	.DI(inter_gpio_in[0]),
@@ -247,21 +255,21 @@ raven_soc core1 (
 	.rcosc_in	(rcosc_in),
 	.xtal_in	(xtal_in),
 	.comp_in	(comp_in),
-	.spi_sck	(spi_sck),
-	.spi_ro_config	(spi_ro_config),
-	.spi_ro_xtal_ena	(spi_ro_xtal_ena),
-	.spi_ro_reg_ena	(spi_ro_reg_ena),
-	.spi_ro_pll_cp_ena	(spi_ro_pll_cp_ena),
-	.spi_ro_pll_vco_ena	(spi_ro_pll_vco_ena),
-	.spi_ro_pll_bias_ena	(spi_ro_pll_bias_ena),
-	.spi_ro_pll_trim	(spi_ro_pll_trim),
-	.spi_ro_mfgr_id	(spi_ro_mfgr_id),
-	.spi_ro_prod_id	(spi_ro_prod_id),
-	.spi_ro_mask_rev	(spi_ro_mask_rev),
+	.spi_sck	(inter_spi_sck),
+	.spi_ro_config	(8'h00),
+	.spi_ro_xtal_ena	(inter_spi_ro_xtal_ena),
+	.spi_ro_reg_ena	(inter_spi_ro_reg_ena),
+	.spi_ro_pll_cp_ena	(inter_spi_ro_pll_cp_ena),
+	.spi_ro_pll_vco_ena	(inter_spi_ro_pll_vco_ena),
+	.spi_ro_pll_bias_ena	(inter_spi_ro_pll_bias_ena),
+	.spi_ro_pll_trim	(inter_spi_ro_pll_trim),
+	.spi_ro_mfgr_id	(inter_spi_ro_mfgr_id),
+	.spi_ro_prod_id	(inter_spi_ro_prod_id),
+	.spi_ro_mask_rev	(inter_spi_ro_mask_rev),
 	.ser_tx	(ser_tx),
 	.ser_rx	(ser_rx),
 	.irq_pin	(irq_pin),
-	.irq_spi	(irq_spi),
+	.irq_spi	(inter_irq_spi),
 	.trap	(trap),
 	.flash_csb	(flash_csb),
 	.flash_clk	(flash_clk),
@@ -289,6 +297,28 @@ sram_32_1024_freepdk45 sram (
 	.csb0  (reset)
 );
 
+raven_spi spi (
+           .RST(reset),
+           .SCK(inter_spi_sck),
+           .SDI(),
+           .CSB(),
+           .SDO(),
+           .sdo_enb(),
+           .xtal_ena(inter_spi_ro_xtal_ena),
+           .reg_ena(inter_spi_ro_reg_ena),
+           .pll_vco_ena(inter_spi_ro_pll_vco_ena),
+           .pll_cp_ena(inter_spi_ro_pll_cp_ena),
+           .pll_bias_ena(inter_spi_ro_pll_bias_ena),
+           .pll_trim(inter_spi_ro_pll_trim),
+           .pll_bypass(),
+           .irq(inter_irq_spi),
+           .reset(reset),
+           .trap(),
+           .mask_rev_in(),               // Metal programmed
+           .mfgr_id(inter_spi_ro_mfgr_id),
+           .prod_id(inter_spi_ro_prod_id),
+           .mask_rev(inter_spi_ro_mask_rev)
 
+);
 endmodule
 

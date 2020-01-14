@@ -7,21 +7,6 @@ module raven_wrapper (
 	input reset,
  	input spi_sck,
 	output [15:0] gpio,
-/*	output 	      adc0_ena,
-	output 	      adc0_convert,
-	input  [9:0]  adc0_data,
-	input  	      adc0_done,
-	output	      adc0_clk,
-	output [1:0]  adc0_inputsrc,
-	output 	      adc1_ena,
-	output 	      adc1_convert,
-	output	      adc1_clk,
-	output [1:0]  adc1_inputsrc,
-	input  [9:0]  adc1_data,
-	input  	      adc1_done,
-
-	output	      dac_ena,
-	output [9:0]  dac_value,*/
 
 	output	      analog_out_sel,	// Analog output select (DAC or bandgap)
 	output	      opamp_ena,	// Op-amp enable for analog output
@@ -59,6 +44,33 @@ module raven_wrapper (
 
 );
 
+  wire analog_out_sel_core ;
+  wire opamp_ena_core ;
+  wire opamp_bias_ena_core ;
+  wire bg_ena_core ;
+  wire comp_ena_core ;
+  wire rcosc_ena_core ;
+  wire overtemp_ena_core ;
+  wire ser_tx_core ;
+  wire trap_core ;
+  wire flash_csb_core ;
+  wire flash_clk_core ;
+  wire [1:0] comp_ninputsrc_core ;
+  wire [1:0] comp_pinputsrc_core ;
+
+  wire pll_clk_core ;
+  wire ext_clk_core ;
+  wire ext_clk_sel_core ;
+  wire ext_reset_core ;
+  wire reset_core ;
+  wire spi_sck_core ;
+  wire overtemp_core ;
+  wire rcosc_in_core ;
+  wire xtal_in_core ;
+  wire comp_in_core ;
+  wire ser_rx_core ;
+  wire irq_pin_core ;
+
   wire inter_ram_wenb;
   wire [9:0] inter_ram_addr;
   wire [31:0] inter_ram_wdata;
@@ -77,6 +89,132 @@ module raven_wrapper (
   wire inter_flash_io0_di, inter_flash_io1_di, inter_flash_io2_di, inter_flash_io3_di;
   wire inter_flash_io0_do, inter_flash_io1_do, inter_flash_io2_do, inter_flash_io3_do;
   wire inter_flash_io0_oeb, inter_flash_io1_oeb, inter_flash_io2_oeb, inter_flash_io3_oeb;
+
+PADOUT analog_out_sel_buf (
+	 .YPAD(analog_out_sel),
+	 .DO(analog_out_sel_core)
+);
+
+PADOUT opamp_ena_buf (
+	 .YPAD(opamp_ena),
+	 .DO(opamp_ena_core)
+);
+
+PADOUT opamp_bias_ena_buf (
+	 .YPAD(opamp_bias_ena),
+	 .DO(opamp_bias_ena_core)
+);
+
+PADOUT bg_ena_buf (
+	 .YPAD(bg_ena),
+	 .DO(bg_ena_core)
+);
+
+PADOUT comp_ena_buf (
+	 .YPAD(comp_ena),
+	 .DO(comp_ena_core)
+);
+
+PADOUT rcosc_ena_buf (
+	 .YPAD(rcosc_ena),
+	 .DO(rcosc_ena_core)
+);
+
+PADOUT overtemp_ena_buf (
+	 .YPAD(overtemp_ena),
+	 .DO(overtemp_ena_core)
+);
+
+PADOUT ser_tx_buf (
+	 .YPAD(ser_tx),
+	 .DO(ser_tx_core)
+);
+
+PADOUT trap_buf (
+	 .YPAD(trap),
+	 .DO(trap_core)
+);
+
+PADOUT flash_csb_buf (
+	 .YPAD(flash_csb),
+	 .DO(flash_csb_core)
+);
+
+PADOUT flash_clk_buf (
+	 .YPAD(flash_clk),
+	 .DO(flash_clk_core)
+);
+
+PADOUT comp_ninputsrc_buf (
+	 .YPAD(comp_ninputsrc),
+	 .DO(comp_ninputsrc_core)
+);
+
+PADOUT comp_pinputsrc_buf (
+	 .YPAD(comp_pinputsrc),
+	 .DO(comp_pinputsrc_core)
+);
+
+PADINC pll_clk_buf (
+	 .YPAD(pll_clk),
+	 .DI(pll_clk_core)
+);
+
+PADINC ext_clk_buf (
+	 .YPAD(ext_clk),
+	 .DI(ext_clk_core)
+);
+
+PADINC ext_clk_sel_buf (
+	 .YPAD(ext_clk_sel),
+	 .DI(ext_clk_sel_core)
+);
+
+PADINC ext_reset_buf (
+	 .YPAD(ext_reset),
+	 .DI(ext_reset_core)
+);
+
+PADINC reset_buf (
+	 .YPAD(reset),
+	 .DI(reset_core)
+);
+
+PADINC spi_sck_buf (
+	 .YPAD(spi_sck),
+	 .DI(spi_sck_core)
+);
+
+PADINC overtemp_buf (
+	 .YPAD(overtemp),
+	 .DI(overtemp_core)
+);
+
+PADINC rcosc_in_buf (
+	 .YPAD(rcosc_in),
+	 .DI(rcosc_in_core)
+);
+
+PADINC xtal_in_buf (
+	 .YPAD(xtal_in),
+	 .DI(xtal_in_core)
+);
+
+PADINC comp_in_buf (
+	 .YPAD(comp_in),
+	 .DI(comp_in_core)
+);
+
+PADINC ser_rx_buf (
+	 .YPAD(ser_rx),
+	 .DI(ser_rx_core)
+);
+
+PADINC irq_pin_buf (
+	 .YPAD(irq_pin),
+	 .DI(irq_pin_core)
+);
+
 
 PADINOUT flash_io_buf_0 (
         .DI(inter_flash_io0_di),
@@ -219,11 +357,11 @@ PADINOUT gpio15 (
 );
 
 raven_soc core1 ( 
-	.pll_clk	(pll_clk), 	
-	.ext_clk	(ext_clk),
-	.ext_clk_sel	(ext_clk_sel),
-	.ext_reset	(ext_reset),
-	.reset		(reset),
+	.pll_clk	(pll_clk_core), 	
+	.ext_clk	(ext_clk_core),
+	.ext_clk_sel	(ext_clk_sel_core),
+	.ext_reset	(ext_reset_core),
+	.reset		(reset_core),
 
 	.ram_wenb	(inter_ram_wenb),
 	.ram_addr	(inter_ram_addr),
@@ -233,34 +371,20 @@ raven_soc core1 (
 	.gpio_out	(inter_gpio_out),
 	.gpio_in	(inter_gpio_in),
 	.gpio_outenb	(inter_gpio_outenb),
-/*	.adc0_ena	(adc0_ena),
-	.adc0_convert	(adc0_convert),
-	.adc0_data	(adc0_data),
-	.adc0_done	(adc0_done),
-	.adc0_clk	(adc0_clk),
-	.adc0_inputsrc	(adc0_inputsrc),
-	.adc1_ena	(adc1_ena),
-	.adc1_convert	(adc1_convert),
-	.adc1_clk	(adc1_clk),
-	.adc1_inputsrc	(adc1_inputsrc),
-	.adc1_data	(adc1_data),
-	.adc1_done	(adc1_done),
-	.dac_ena	(dac_ena),
-	.dac_value	(dac_value),*/
-	.analog_out_sel	(analog_out_sel),
-	.opamp_ena	(opamp_ena),
-	.opamp_bias_ena	(opamp_bias_ena),
-	.bg_ena	(bg_ena),
-	.comp_ena	(comp_ena),
-	.comp_ninputsrc	(comp_ninputsrc),
-	.comp_pinputsrc	(comp_pinputsrc),
-	.rcosc_ena	(rcosc_ena),
-	.overtemp_ena	(overtemp_ena),
-	.overtemp	(overtemp),
-	.rcosc_in	(rcosc_in),
-	.xtal_in	(xtal_in),
-	.comp_in	(comp_in),
-	.spi_sck	(spi_sck),
+	.analog_out_sel	(analog_out_sel_core),
+	.opamp_ena	(opamp_ena_core),
+	.opamp_bias_ena	(opamp_bias_ena_core),
+	.bg_ena	(bg_ena_core),
+	.comp_ena	(comp_ena_core),
+	.comp_ninputsrc	(comp_ninputsrc_core),
+	.comp_pinputsrc	(comp_pinputsrc_core),
+	.rcosc_ena	(rcosc_ena_core),
+	.overtemp_ena	(overtemp_ena_core),
+	.overtemp	(overtemp_core),
+	.rcosc_in	(rcosc_in_core),
+	.xtal_in	(xtal_in_core),
+	.comp_in	(comp_in_core),
+	.spi_sck	(spi_sck_core),
 	.spi_ro_config	(8'h00),
 	.spi_ro_xtal_ena	(inter_spi_ro_xtal_ena),
 	.spi_ro_reg_ena	(inter_spi_ro_reg_ena),
@@ -271,13 +395,13 @@ raven_soc core1 (
 	.spi_ro_mfgr_id	(inter_spi_ro_mfgr_id),
 	.spi_ro_prod_id	(inter_spi_ro_prod_id),
 	.spi_ro_mask_rev	(inter_spi_ro_mask_rev),
-	.ser_tx	(ser_tx),
-	.ser_rx	(ser_rx),
-	.irq_pin	(irq_pin),
+	.ser_tx	(ser_tx_core),
+	.ser_rx	(ser_rx_core),
+	.irq_pin	(irq_pin_core),
 	.irq_spi	(inter_irq_spi),
-	.trap	(trap),
-	.flash_csb	(flash_csb),
-	.flash_clk	(flash_clk),
+	.trap	(trap_core),
+	.flash_csb	(flash_csb_core),
+	.flash_clk	(flash_clk_core),
 	.flash_io0_oeb	(inter_flash_io0_oeb),
 	.flash_io1_oeb	(inter_flash_io1_oeb),
 	.flash_io2_oeb	(inter_flash_io2_oeb),
@@ -299,12 +423,12 @@ sram_32_1024_freepdk45 sram (
 	.din0  (inter_ram_wdata),
         .dout0 (inter_ram_rdata),
 	.clk0  (pll_clk),
-	.csb0  (reset)
+	.csb0  (reset_core)
 );
 
 raven_spi spi (
-           .RST(reset),
-           .SCK(spi_sck),
+           .RST(reset_core),
+           .SCK(spi_sck_core),
            .SDI(),
            .CSB(),
            .SDO(),

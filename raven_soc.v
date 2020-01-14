@@ -48,25 +48,7 @@ module raven_soc (
 	// Memory mapped I/O signals
 	output [15:0] gpio_out,
 	input  [15:0] gpio_in,
-//	output [15:0] gpio_pullup,
-//	output [15:0] gpio_pulldown,
 	output [15:0] gpio_outenb,
-
-/*	output 	      adc0_ena,
-	output 	      adc0_convert,
-	input  [9:0]  adc0_data,
-	input  	      adc0_done,
-	output	      adc0_clk,
-	output [1:0]  adc0_inputsrc,
-	output 	      adc1_ena,
-	output 	      adc1_convert,
-	output	      adc1_clk,
-	output [1:0]  adc1_inputsrc,
-	input  [9:0]  adc1_data,
-	input  	      adc1_done,
-
-	output	      dac_ena,
-	output [9:0]  dac_value,*/
 
 	output	      analog_out_sel,	// Analog output select (DAC or bandgap)
 	output	      opamp_ena,	// Op-amp enable for analog output

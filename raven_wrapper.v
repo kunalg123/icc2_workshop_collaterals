@@ -5,9 +5,9 @@ module raven_wrapper (
 	input ext_clk_sel,
 	input ext_reset,
 	input reset,
-
+ 	input spi_sck,
 	output [15:0] gpio,
-	output 	      adc0_ena,
+/*	output 	      adc0_ena,
 	output 	      adc0_convert,
 	input  [9:0]  adc0_data,
 	input  	      adc0_done,
@@ -21,7 +21,7 @@ module raven_wrapper (
 	input  	      adc1_done,
 
 	output	      dac_ena,
-	output [9:0]  dac_value,
+	output [9:0]  dac_value,*/
 
 	output	      analog_out_sel,	// Analog output select (DAC or bandgap)
 	output	      opamp_ena,	// Op-amp enable for analog output
@@ -57,20 +57,6 @@ module raven_wrapper (
 	inout flash_io2,
 	inout flash_io3
 
-/*	output flash_io0_oeb,
-	output flash_io1_oeb,
-	output flash_io2_oeb,
-	output flash_io3_oeb,
-
-	output flash_io0_do,
-	output flash_io1_do,
-	output flash_io2_do,
-	output flash_io3_do,
-
-	input  flash_io0_di,
-	input  flash_io1_di,
-	input  flash_io2_di,
-	input  flash_io3_di */
 );
 
   wire inter_ram_wenb;
@@ -78,7 +64,6 @@ module raven_wrapper (
   wire [31:0] inter_ram_wdata;
   wire [31:0] inter_ram_rdata;
   wire [15:0] inter_gpio_outenb, inter_gpio_out, inter_gpio_in;
-  wire inter_spi_sck ;
   wire inter_spi_ro_xtal_ena ;
   wire inter_spi_ro_reg_ena ;
   wire inter_spi_ro_pll_cp_ena ;
@@ -248,7 +233,7 @@ raven_soc core1 (
 	.gpio_out	(inter_gpio_out),
 	.gpio_in	(inter_gpio_in),
 	.gpio_outenb	(inter_gpio_outenb),
-	.adc0_ena	(adc0_ena),
+/*	.adc0_ena	(adc0_ena),
 	.adc0_convert	(adc0_convert),
 	.adc0_data	(adc0_data),
 	.adc0_done	(adc0_done),
@@ -261,7 +246,7 @@ raven_soc core1 (
 	.adc1_data	(adc1_data),
 	.adc1_done	(adc1_done),
 	.dac_ena	(dac_ena),
-	.dac_value	(dac_value),
+	.dac_value	(dac_value),*/
 	.analog_out_sel	(analog_out_sel),
 	.opamp_ena	(opamp_ena),
 	.opamp_bias_ena	(opamp_bias_ena),
@@ -275,7 +260,7 @@ raven_soc core1 (
 	.rcosc_in	(rcosc_in),
 	.xtal_in	(xtal_in),
 	.comp_in	(comp_in),
-	.spi_sck	(inter_spi_sck),
+	.spi_sck	(spi_sck),
 	.spi_ro_config	(8'h00),
 	.spi_ro_xtal_ena	(inter_spi_ro_xtal_ena),
 	.spi_ro_reg_ena	(inter_spi_ro_reg_ena),
@@ -319,7 +304,7 @@ sram_32_1024_freepdk45 sram (
 
 raven_spi spi (
            .RST(reset),
-           .SCK(inter_spi_sck),
+           .SCK(spi_sck),
            .SDI(),
            .CSB(),
            .SDO(),
@@ -332,7 +317,7 @@ raven_spi spi (
            .pll_trim(inter_spi_ro_pll_trim),
            .pll_bypass(),
            .irq(inter_irq_spi),
-           .reset(reset),
+           .reset(),
            .trap(),
            .mask_rev_in(),               // Metal programmed
            .mfgr_id(inter_spi_ro_mfgr_id),

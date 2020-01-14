@@ -52,7 +52,7 @@ module raven_soc (
 //	output [15:0] gpio_pulldown,
 	output [15:0] gpio_outenb,
 
-	output 	      adc0_ena,
+/*	output 	      adc0_ena,
 	output 	      adc0_convert,
 	input  [9:0]  adc0_data,
 	input  	      adc0_done,
@@ -66,7 +66,7 @@ module raven_soc (
 	input  	      adc1_done,
 
 	output	      dac_ena,
-	output [9:0]  dac_value,
+	output [9:0]  dac_value,*/
 
 	output	      analog_out_sel,	// Analog output select (DAC or bandgap)
 	output	      opamp_ena,	// Op-amp enable for analog output
@@ -144,15 +144,15 @@ module raven_soc (
 
 	// memory-mapped I/O control registers
 
-	wire   [15:0] gpio_pullup;
-	wire   [15:0] gpio_pulldown;
+/*	wire   [15:0] gpio_pullup;
+	wire   [15:0] gpio_pulldown; */
 	wire   [15:0] gpio_outenb;
 
 	reg    [15:0] gpio;		// GPIO output data
 	reg    [15:0] gpio_pu;		// GPIO pull-up enable
 	reg    [15:0] gpio_pd;		// GPIO pull-down enable
 	reg    [15:0] gpio_oeb;		// GPIO output enable (sense negative)
-	reg 	      adc0_ena;		// ADC0 enable
+	/*reg 	      adc0_ena;		// ADC0 enable
 	reg 	      adc0_convert;	// ADC0 convert
 	reg    [1:0]  adc0_clksrc;	// ADC0 clock source
 	reg    [1:0]  adc0_inputsrc;	// ADC0 input source
@@ -161,7 +161,7 @@ module raven_soc (
 	reg    [1:0]  adc1_clksrc;	// ADC1 clock source
 	reg    [1:0]  adc1_inputsrc;	// ADC1 input source
 	reg	      dac_ena;		// DAC enable
-	reg    [9:0]  dac_value;	// DAC output value
+	reg    [9:0]  dac_value;	// DAC output value*/
 	reg	      comp_ena;		// Comparator enable
 	reg    [1:0]  comp_ninputsrc;	// Comparator negative input source
 	reg    [1:0]  comp_pinputsrc;	// Comparator positive input source
@@ -179,8 +179,8 @@ module raven_soc (
  	reg	      opamp_ena;	// Analog output op-amp enable
  	reg	      opamp_bias_ena;	// Analog output op-amp bias enable
  	reg	      bg_ena;		// Bandgap enable
-	wire	      adc0_clk;		// ADC0 clock (multiplexed)
-	wire	      adc1_clk;		// ADC1 clock (multiplexed)
+/*	wire	      adc0_clk;		// ADC0 clock (multiplexed)
+	wire	      adc1_clk;		// ADC1 clock (multiplexed) */
 
 	wire ram_wenb;
 	wire [9:0] ram_addr;
@@ -197,7 +197,7 @@ module raven_soc (
 
 	// ADC clock assignments
 	
-	assign adc0_clk = (adc0_clksrc == 2'b00) ? rcosc_in :
+	/*assign adc0_clk = (adc0_clksrc == 2'b00) ? rcosc_in :
 			  (adc0_clksrc == 2'b01) ? spi_sck :
 			  (adc0_clksrc == 2'b10) ? xtal_in :
 			  ext_clk;
@@ -205,7 +205,7 @@ module raven_soc (
 	assign adc1_clk = (adc1_clksrc == 2'b00) ? rcosc_in :
 			  (adc1_clksrc == 2'b01) ? spi_sck :
 			  (adc1_clksrc == 2'b10) ? xtal_in :
-			  ext_clk;
+			  ext_clk;*/
 
 	// GPIO assignments
 
@@ -519,7 +519,7 @@ module raven_soc (
 			gpio_oeb <= 16'hffff;
 			gpio_pu <= 0;
 			gpio_pd <= 0;
-			adc0_ena <= 0;
+			/*adc0_ena <= 0;
 			adc0_convert <= 0;
 			adc0_clksrc <= 0;
 			adc0_inputsrc <= 0;
@@ -528,7 +528,7 @@ module raven_soc (
 			adc1_clksrc <= 0;
 			adc1_inputsrc <= 0;
 			dac_ena <= 0;
-			dac_value <= 0;
+			dac_value <= 0;*/
 			comp_ena <= 0;
 			comp_ninputsrc <= 0;
 			comp_pinputsrc <= 0;
@@ -567,7 +567,7 @@ module raven_soc (
 					iomem_rdata <= {16'd0, gpio_pu};
 					if (iomem_wstrb[0]) gpio_pd[ 7: 0] <= iomem_wdata[ 7: 0];
 					if (iomem_wstrb[1]) gpio_pd[15: 8] <= iomem_wdata[15: 8];
-				end else if (iomem_addr[7:0] == 8'h10) begin
+				/*end else if (iomem_addr[7:0] == 8'h10) begin
 					iomem_rdata <= {31'd0, adc0_ena};
 					if (iomem_wstrb[0]) adc0_ena <= iomem_wdata[0];
 				end else if (iomem_addr[7:0] == 8'h14) begin
@@ -605,7 +605,7 @@ module raven_soc (
 				end else if (iomem_addr[7:0] == 8'h54) begin
 					iomem_rdata <= {22'd0, dac_value};
 					if (iomem_wstrb[0]) dac_value[7:0] <= iomem_wdata[7:0];
-					if (iomem_wstrb[1]) dac_value[9:8] <= iomem_wdata[9:8];
+					if (iomem_wstrb[1]) dac_value[9:8] <= iomem_wdata[9:8];*/
 				end else if (iomem_addr[7:0] == 8'h60) begin
 					iomem_rdata <= {31'd0, comp_ena};
 					if (iomem_wstrb[0]) comp_ena <= iomem_wdata[0];

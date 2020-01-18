@@ -166,6 +166,95 @@ if {[file exists $TCL_PNS_FILE]} {
    source -echo $TCL_PNS_FILE
 }
 
+if {$PNS_CHARACTERIZE_FLOW == "true" && $TCL_COMPILE_PG_FILE != ""} {
+   puts "RM-info : RUNNING PNS CHARACTERIZATION FLOW because \$PNS_CHARACTERIZE_FLOW == true"
+   characterize_block_pg -output block_pg -compile_pg_script $TCL_COMPILE_PG_FILE
+   set_constraint_mapping_file ./block_pg/pg_mapfile
+   # run_block_compile_pg will honor the set_editability settings by default
+   if {$DISTRIBUTED} { 
+      set HOST_OPTIONS "-host_options block_script"
+   } else {
+      set HOST_OPTIONS ""
+   }
+   puts "RM-info : Running run_block_compile_pg $HOST_OPTIONS"
+   eval run_block_compile_pg ${HOST_OPTIONS}
+
+} else {
+   if {$TCL_COMPILE_PG_FILE != ""} {
+      source $TCL_COMPILE_PG_FILE
+   } else {
+      puts "RM-info : No Power Networks Implemented as TCL_COMPILE_PG_FILE does not exist"
+   }
+}
+
+check_pg_connectivity -check_std_cell_pins none
+# Create error report for PG ignoring std cells because they are not legalized
+check_pg_drc -ignore_std_cells
+# check_mv_design -erc_mode and -power_connectivity
+redirect -file $REPORTS_DIR_CREATE_POWER/check_mv_design.erc_mode {check_mv_design -erc_mode}
+redirect -file $REPORTS_DIR_CREATE_POWER/check_mv_design.power_connectivity {check_mv_design -power_connectivity}
+
 save_block -hier -force   -label ${CREATE_POWER_LABEL_NAME}
+save_lib -all
+
+####################################
+# Pin Placement
+####################################
+if {[file exists [which $TCL_PIN_CONSTRAINT_FILE]] && !$PLACEMENT_PIN_CONSTRAINT_AWARE} {
+   source -echo $TCL_PIN_CONSTRAINT_FILE
+}
+set_app_options -as_user_default -list {route.global.timing_driven true}
+
+if {$CHECK_DESIGN} {
+   redirect -file ${REPORTS_DIR_PLACE_PINS}/check_design.pre_pin_placement     {check_design -ems_database check_design.pre_pin_placement.ems -checks dp_pre_pin_placement}
+}
+
+if {$PLACE_PINS_SELF} {
+   place_pins -self
+}
+
+if {$PLACE_PINS_SELF} {
+   # Write top-level port constraint file based on actual port locations in the design for reuse during incremental run.
+   write_pin_constraints -self       -file_name $OUTPUTS_DIR/preferred_port_locations.tcl       -physical_pin_constraint {side | offset | layer}       -from_existing_pins
+
+   # Verify Top-level Port Placement Results
+   check_pin_placement -self -pre_route true -pin_spacing true -sides true -layers true -stacking true
+
+   # Generate Top-level Port Placement Report
+   report_pin_placement -self > $REPORTS_DIR_PLACE_PINS/report_port_placement.rpt
+}
+
+save_block -hier -force   -label ${PLACE_PINS_LABEL_NAME}
+save_lib -all
+
+####################################
+# Timing estimation
+####################################
+estimate_timing
+redirect -file $REPORTS_DIR_TIMING_ESTIMATION/${DESIGN_NAME}.post_estimated_timing.rpt     {report_timing -corner estimated_corner -mode [all_modes]}
+redirect -file $REPORTS_DIR_TIMING_ESTIMATION/${DESIGN_NAME}.post_estimated_timing.qor     {report_qor    -corner estimated_corner}
+redirect -file $REPORTS_DIR_TIMING_ESTIMATION/${DESIGN_NAME}.post_estimated_timing.qor.sum {report_qor    -summary}
+
+save_block -hier -force   -label ${TIMING_ESTIMATION_LABEL_NAME}
+save_lib -all
+
+
+set path_dir [file normalize ${WORK_DIR_WRITE_DATA}]
+set write_block_data_script ./write_block_data.tcl
+source ${write_block_data_script}
+
+####################################
+# Place, CTS, Route
+####################################
+set_host_options -max_cores 8
+remove_corners [get_corners estimated_corner]
+set_app_options -name place.coarse.continue_on_missing_scandef -value true
+place_opt
+clock_opt
+route_auto -max_detail_route_iterations 5
+set FILLER_CELLS [get_object_name [sort_collection -descending [get_lib_cells NangateOpenCellLibrary/FILL*] area]]
+create_stdcell_fillers -lib_cells $FILLER_CELLS
+
+save_block -hier -force   -label post_route
 save_lib -all
 

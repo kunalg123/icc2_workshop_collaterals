@@ -20,7 +20,7 @@ set_pg_strategy core_ring -core -pattern \
 #-------------------------------------------------------------------------------
 ################################################################################
 
-create_pg_macro_conn_pattern hm_pattern -pin_conn_type scattered_pin -layer {metal7 metal8}
+#create_pg_macro_conn_pattern hm_pattern -pin_conn_type scattered_pin -layer {metal7 metal8}
 #create_pg_macro_conn_pattern pad_pattern -pin_conn_type scattered_pin -layer {M7 M6}
 
 #set all_pg_pads [get_cells * -hier -filter "ref_name==VDD_NS || ref_name==VSS_NS"]
@@ -53,8 +53,8 @@ set_pg_strategy s_mesh1 \
 # M A C R O   P G   C O N N E C T I O N S
 #-------------------------------------------------------------------------------
 ################################################################################
-set toplevel_hms [filter_collection [get_cells * -physical_context] "is_hard_macro == true"]
-set_pg_strategy macro_con -macros $toplevel_hms -pattern {{name: hm_pattern} {nets: {VDD VSS}}}
+#set toplevel_hms [filter_collection [get_cells * -physical_context] "is_hard_macro == true"]
+#set_pg_strategy macro_con -macros $toplevel_hms -pattern {{name: hm_pattern} {nets: {VDD VSS}}}
 
 
 

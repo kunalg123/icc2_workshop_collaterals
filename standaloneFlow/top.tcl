@@ -63,7 +63,8 @@ if {$CHECK_DESIGN} {
 ####################################
 # Floorplanning
 ####################################
-initialize_floorplan -core_utilization 0.05
+#initialize_floorplan -core_utilization 0.05
+initialize_floorplan -honor_pad_limit 
 save_lib -all
 
 ####################################
@@ -84,6 +85,7 @@ if {[file exists [which $TCL_PAD_CONSTRAINTS_FILE]]} {
    puts "RM-info : running place_io"
    place_io
 }
+set_attribute [get_cells -hierarchical -filter pad_cell==true] status fixed
 
 save_block -hier -force   -label ${PLACE_IO_LABEL_NAME}
 save_lib -all

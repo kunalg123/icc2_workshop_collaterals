@@ -23,7 +23,7 @@ set REFERENCE_LIBRARY 		[list /home/kunal/workshop/icc2_workshop_collaterals/nan
 					;#		  in order to transition between hierarchical DP and hierarchical PNR flows properly, 
 					;#		  absolute paths are a requirement.
 set COMPRESS_LIBS               "false" ;# Save libs as compressed NDM; only used in DP.
-#set VERILOG_NETLIST_FILES      ""
+#set VERILOG_NETLIST_FILES      "/home/kunal/workshop/icc2_workshop_collaterals/pnrScripts/spi_slave.synth.v"
 set VERILOG_NETLIST_FILES	"/home/kunal/workshop/icc2_workshop_collaterals/pnrScripts/raven_wrapper.synth.v"	;# Verilog netlist files;
 					;# 	for DP: required
 					;# 	for PNR: required if INIT_DESIGN_INPUT is ASCII in icc2_pnr_setup.tcl; not required for DC_ASCII or DP_RM_NDM
@@ -101,8 +101,8 @@ set SITE_SYMMETRY_LIST	""		;# Specify a list of site def and its symmetry value;
 					;# this is to be used by read_def or initialize_floorplan command to control the site symmetry;
 					;# example: set SITE_SYMMETRY_LIST "{unit Y} {unit1 Y}"; this is applied in the init_design.tech_setup.tcl script 
 
-set MIN_ROUTING_LAYER		""	;# Min routing layer name; normally should be specified; otherwise tool can use all metal layers
-set MAX_ROUTING_LAYER		""	;# Max routing layer name; normally should be specified; otherwise tool can use all metal layers
+set MIN_ROUTING_LAYER		"metal1"	;# Min routing layer name; normally should be specified; otherwise tool can use all metal layers
+set MAX_ROUTING_LAYER		"metal10"	;# Max routing layer name; normally should be specified; otherwise tool can use all metal layers
 
 set LIBRARY_CONFIGURATION_FLOW	false	;# Set it to true enables library configuration flow which calls the library manager under the hood to generate .nlibs, 
 					;# save them to disk, and automatically link them to the design.

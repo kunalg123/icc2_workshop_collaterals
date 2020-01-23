@@ -76,7 +76,7 @@ foreach s [array name scenario_constraints] {
 ########################################
 # Below are just examples to show usage of set_scenario_status (actual usage shold depend on your objective)
 # scenario1 is a setup scenario and scenario2 is a hold scenario
-set_scenario_status $scenario1 -none -setup true -hold false -leakage_power true -dynamic_power true -max_transition true -max_capacitance true -min_capacitance false -active true
+set_scenario_status $scenario1 -none -setup true -hold true -leakage_power true -dynamic_power true -max_transition true -max_capacitance true -min_capacitance false -active true
 #set_scenario_status $scenario2 -none -setup false -hold true -leakage_power true -dynamic_power false -max_transition true -max_capacitance false -min_capacitance true -active true
 
 #redirect -file ${REPORTS_DIR}/${INIT_DESIGN_BLOCK_NAME}.report_scenarios.rpt {report_scenarios} 
